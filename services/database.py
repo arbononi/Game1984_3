@@ -20,3 +20,82 @@ def close_connection():
     if _connection:
         _connection.close()
         _connection = None
+
+def create_database():
+    global _connection
+    _ = get_connection()
+    cursor = _connection.cursor()
+    try:
+        create_table_livros(cursor)
+        create_table_capitulos(cursor)
+        create_table_paginas(cursor)
+        create_table_linhas(cursor)
+        create_table_acoes(cursor)
+        create_table_acoes_automaticas(cursor)
+        _connection.commit()
+        return True
+    except Exception as ex:
+        _connection.rollback()
+        raise ex
+
+def create_table_livros(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Livros (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Titulo TEXT NOT NULL,
+            Autor TEXT,
+            DataCadastro TEXT NOT NULL
+        );
+    """)
+
+def create_table_capitulos(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Capitulos (
+            IdCapitulo INTEGER PRIMARY KEY AUTOINCREMENT,
+            IdLivro INTEGER NOT NULL,
+            NrPaginas INTEGER NOT NULL,
+            FOREIGN KEY (IdLivro) REFERENCES Livros(Id)
+        );
+    """)
+
+def create_table_paginas(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Paginas (
+            IdPagina INTEGER PRIMARY KEY AUTOINCREMENT,
+            IdCapitulo INTEGER NOT NULL,
+            NrLinhas INTEGER NOT NULL,
+            FOREIGN KEY (IdCapitulo) REFERENCES Capitulos(IdCapitulo)
+        );
+    """)
+
+def create_table_linhas(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Linhas (
+            IdLinha INTEGER PRIMARY KEY AUTOINCREMENT,
+            IdPagina INTEGER NOT NULL,
+            PossuiAcao INTEGER NOT NULL CHECK (PossuiAcao IN (0, 1)),
+            FOREIGN KEY (IdPagina) REFERENCES Paginas(IdPagina)
+        );
+    """)
+
+def create_table_acoes(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Acoes (
+            IdAcao INTEGER PRIMARY KEY AUTOINCREMENT,
+            IdLinha INTEGER NOT NULL,
+            TipoAcao TEXT NOT NULL,
+            PossuiAcaoAutomatica INTEGER NOT NULL CHECK (PossuiAcaoAutomatica IN (0, 1)),
+            ProximoPasso TEXT,
+            FOREIGN KEY (IdLinha) REFERENCES Linhas(IdLinha)
+        );
+    """)
+
+def create_table_acoes_automaticas(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS AcoesAutomaticas (
+            IdAcaoAutomatica INTEGER PRIMARY KEY AUTOINCREMENT,
+            IdAcao INTEGER NOT NULL,
+            PassosAExecutar TEXT NOT NULL,
+            FOREIGN KEY (IdAcao) REFERENCES Acoes(IdAcao)
+        );
+    """)

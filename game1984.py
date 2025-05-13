@@ -7,7 +7,9 @@
 import os
 import locale
 from os import system as clear_screen
-from services.database import open_connection, close_connection
+from pathlib import Path
+from services.database import _DB_PATH
+from services.database import open_connection, close_connection, create_database
 from utils.userfunctions import *
 from layouts.layouts import tela_principal, rosto, tela_capitulos, legenda_rosto
 from configs.config import lin_terminal, col_terminal, lin_message
@@ -17,6 +19,16 @@ locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 def set_size_terminal(lines=30, columns=100):
     os.system(f"mode con: cols={columns} lines={lines}")
 
+def check_database():
+    arquivo = _DB_PATH
+    if arquivo.is_file():
+        return True
+    try:
+        return create_database()
+    except Exception as ex:
+        print(ex)
+        return False
+    
 def iniciar():
     desenhar_tela(layout=tela_principal, line_loop=4, stop_loop=lin_message - 1)
     str_data_atual = formatar_data(get_data_atual(), True, True)
@@ -32,6 +44,8 @@ if __name__ == "__main__":
     os.system("chcp 65001 > nul")
     clear_screen("cls")
     set_size_terminal(lin_terminal, col_terminal)
+    if not check_database():
+        exit()
     iniciar()
     clear_screen("cls") 
     close_connection()

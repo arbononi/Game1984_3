@@ -1,0 +1,22 @@
+meu_projeto/
+│
+├── controllers/
+│   └── livro_controller.py
+│
+├── models/
+│   ├── livro.py       # Apenas dataclasses ou classes simples
+│   ├── capitulo.py
+│   ├── pagina.py
+│   └── linha.py
+│
+├── services/
+│   └── banco_repository.py  # Toda lógica de banco de dados aqui
+│
+├── views/
+│   └── livro_view.py
+│
+├── data/
+│   └── banco.db
+│
+├── main.py
+└── requirements.txt
