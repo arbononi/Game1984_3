@@ -2,10 +2,18 @@ from dataclasses import dataclass
 from datetime import datetime
 
 @dataclass
+class Usuario:
+    id: int = None
+    nome: str = ""
+    login: str = ""
+    password: bytes = b""
+    data_cadastro: datetime = datetime.now()
+    
+@dataclass
 class Livro:
     id: int = None
-    titulo: str = ''
-    autor: str = ''
+    titulo: str = ""
+    autor: str = ""
     data_cadastro: datetime = None
 
 
@@ -25,20 +33,20 @@ class Pagina:
 class Linha:
     idlinha: int = None
     idpagina: int = None
-    conteudo: str = ''
+    conteudo: str = ""
     possuiacao: int = None
 
 @dataclass
 class Acao:
     idacao: int = None
     idlinha: int = None
-    tipoacao: str = ''
+    tipoacao: str = ""
     possuiacaoautomatica: int = None
-    proximopasso: str = ''
+    proximopasso: str = ""
 
 @dataclass
 class AcaoAutomatica:
     idacaoautomatica: int = None
     idacao: int = None
-    passosexecutar: str = ''
+    passosexecutar: str = ""
         

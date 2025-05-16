@@ -1,5 +1,6 @@
 import sys
 import msvcrt
+import bcrypt
 from datetime import datetime, date
 from configs.config import lin_terminal, col_terminal, lin_message, col_message, size_message_lin
 
@@ -51,8 +52,8 @@ def exibir_conteudo(conteudo: str, lin: int=lin_message, col: int=col_message, c
 
 def limpar_tela(start: int=4, stop: int=29, col: int=col_message, size: int=size_message_lin):
     for lin in range(start, stop):
-        posicionar_cursor(lin, col)
-        print(" " * size, end="")
+        posicionar_cursor(lin, col - 1)
+        print(" " * (size + 1), end="")
     finalizar_print()
 
 def desenhar_tela(layout, line_loop=0, stop_loop=0):
@@ -89,3 +90,9 @@ def formatar_data(data: date, exibir_dia_semana=False, antes=False):
 
 def formatar_data_hora(data: datetime):
     return data.strftime("%d/%m/%Y %H:%M:%S")
+
+def criar_hash_senha(senha: str) -> bytes:
+    return bcrypt.hashpw(senha.encode(), bcrypt.gensalt())
+
+def verificar_senha(senha: str, hash_senha: bytes) -> bool:
+    return bcrypt.checkpw(senha.encode(), hash_senha)
