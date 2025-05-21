@@ -27,6 +27,7 @@ def create_database():
     cursor = _connection.cursor()
     try:
         create_table_usuarios(cursor)
+        create_table_progressousuario(cursor)
         create_table_livros(cursor)
         create_table_capitulos(cursor)
         create_table_paginas(cursor)
@@ -47,6 +48,20 @@ def create_table_usuarios(cursor):
             Login TEXT NOT NULL,
             Password BLOB NOT NULL,
             DataCadastro TEXT NOT NULL
+        );
+    """)
+
+def create_table_progressousuario(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS ProgressoUsuario(
+            IdUsuario INTEGER NOT NULL,
+            IdLogin INTEGER NOT NULL,
+            DataLogin TEXT NOT NULL,
+            IdLivro INTEGER NOT NULL,
+            IdCapitulo INTEGER NOT NULL,
+            IdPagina INTEGER NOT NULL,
+            IdLinha INTEGER NOT NULL,
+            PRIMARY KEY(IdUsuario, IdLogin)
         );
     """)
 

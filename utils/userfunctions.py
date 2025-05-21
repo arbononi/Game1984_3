@@ -50,7 +50,7 @@ def exibir_conteudo(conteudo: str, lin: int=lin_message, col: int=col_message, c
         print(conteudo, end="")
     finalizar_print()
 
-def limpar_tela(start: int=4, stop: int=29, col: int=col_message, size: int=size_message_lin):
+def limpar_tela(start: int=4, stop: int=33, col: int=col_message, size: int=size_message_lin):
     for lin in range(start, stop):
         posicionar_cursor(lin, col - 1)
         print(" " * (size + 1), end="")

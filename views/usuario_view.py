@@ -1,6 +1,6 @@
 import getpass
 from datetime import datetime
-from models.models import Usuario
+# from models.models import Usuario
 from layouts.layouts import tela_usuarios, linha_opcoes, opcoes_disponiveis, titulos_tela
 from utils.userfunctions import *
 from configs.config import *

@@ -30,7 +30,7 @@ class BancoRepository:
         except Exception as ex:
             self.con.rollback()
             raise ex
-                
+
     def inserir_livro(self, livro: Livro):
         self.cur.execute("INSERT INTO Livros (Titulo, Autor, DataCadastro) VALUES (?, ?, ?)",
                     (livro.titulo, livro.autor, livro.data_cadastro))
@@ -72,6 +72,14 @@ class BancoRepository:
         self.con.commit()
         id_acao_automatica = self.cur.lastrowid
         return id_acao_automatica
+
+    def inserir_progresso_usuario(self, progresso_usuario: ProgressoUsuario):
+        progresso_usuario.idlogin = self.get_proximo_idLogin_progresso_usuario(progresso_usuario.idusuario)
+        self.cur.execute("INSERT INTO ProgressoUsuario(IdUsuario, IdLogin,\
+                         DataLogin, IdLivro, IdCapitulo, IdPagina, IdLinha)\
+                         VALUES(?, ?, ?, ?, ?, ?, ?)")
+        self.con.commit()
+        return True
 
     def buscar_usuario_por_id(self, id_usuario: int) ->Optional[Usuario]:
         self.con.row_factory = sqlite3.Row
@@ -121,10 +129,10 @@ class BancoRepository:
         return Livro(
             id=row_livro["Id"],
             titulo=row_livro["Titulo"],
-            autor=row_livro["Author"],
+            autor=row_livro["Autor"],
             data_cadastro=row_livro["DataCadastro"]
         )
-
+   
     def carregar_livro_completo(self, id_livro: int) -> Optional[LivroDTO]:
         # Buscar livro
         livro = self.buscar_livro(id_livro)
@@ -191,6 +199,35 @@ class BancoRepository:
 
                     pagina.linhas.append(linha)
                 capitulo.paginas.append(pagina)
-            livro.capitulos.append(capitulo)
+            livro_dto.capitulos.append(capitulo)
 
         return livro_dto
+    
+    def get_proximo_idLogin_progresso_usuario(self, id_usuario: int) -> int:
+        self.con.row_factory = sqlite3.Row
+        self.cur.execute("SELECT COALESCE(MAX(IdLogin), 0) + 1 as Proximo from ProgressoUsuario Where IdUsuario = ?", (id_usuario,))
+        row_idlogin = self.cur.fetchone()
+        if not row_idlogin:
+            return 1
+        return row_idlogin["Proximo"]
+    
+    def get_progresso_usuario(self, id_usuario: int) -> Optional[ProgressoUsuario]:
+        self.con.row_factory = sqlite3.Row
+        self.cur.execute("select * from ProgressoUsuario\
+                          where IdUsuario = ?\
+                          order by IdLogin DESC\
+                          limit 1", (id_usuario,))
+        row_progresso = self.cur.fetchone()
+        if not row_progresso:
+            return None
+        return ProgressoUsuario(
+            idusuario=row_progresso['IdUsuario'],
+            idlogin=row_progresso["IdLogin"],
+            datalogin=datetime.strptime(row_progresso["DataLogin"], '%Y-%m-%d %H:%M:%S'),
+            idlivro=row_progresso["IdLivro"],
+            idcapitulo=row_progresso["IdCapitulo"],
+            idpagina=row_progresso["IdPagina"],
+            idlinha=row_progresso["IdLinha"]
+        )
+    
+

@@ -49,4 +49,14 @@ class AcaoAutomatica:
     idacaoautomatica: int = None
     idacao: int = None
     passosexecutar: str = ""
+
+@dataclass
+class ProgressoUsuario:
+    idusuario: int = None
+    idlogin : int = None
+    datalogin : str = ''
+    idlivro : int = None
+    idcapitulo : int = None
+    idpagina : int = None
+    idlinha : int = None
         
